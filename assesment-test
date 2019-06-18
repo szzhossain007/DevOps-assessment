@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# To debug the script:
+#set -x
+
+#function defination:
+sum () {
+s=0
+while [ $Num -gt 0 ]
+do
+    i=$(( $Num % 10 ))
+
+    Num=$(( $Num / 10 ))
+
+    s=$(( $s + $i ))
+done
+echo  "$s"
+}
+
+while getopts "xf:" OPTION
+do
+    case $OPTION in
+           x)
+                read -p 'STRING: ' str
+                HEXVAL=$(hexdump -e '"%X"' <<<"$str")
+                Num=$(sed 's/[a-zA-Z]*//g;' <<<"$HEXVAL")
+                sum
+                exit
+                ;;
+           f)
+                file=$OPTARG
+                Num=$(sed 's/[a-zA-Z]*//g;' <"$file")
+                sum
+                exit
+                ;;
+    esac
+done
+
+if [ $OPTION != "xf" ]; then
+  read -p 'STRING: ' str
+  Num=$(sed 's/[a-zA-Z]*//g;' <<<"$str")
+  sum
+  exit 1
+fi
